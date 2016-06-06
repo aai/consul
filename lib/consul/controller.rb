@@ -5,7 +5,7 @@ module Consul
       base.send :include, InstanceMethods
       base.send :extend, ClassMethods
       if ensure_power_initializer_present?
-        base.before_filter :ensure_power_initializer_present
+        base.before_action :ensure_power_initializer_present
       end
     end
 
@@ -28,17 +28,17 @@ module Consul
       private
 
       def require_power_check(options = {})
-        before_filter :unchecked_power, options
+        # before_action :unchecked_power
       end
 
       # This is badly named, since it doesn't actually skip the :check_power filter
       def skip_power_check(options = {})
-        skip_before_filter :unchecked_power, options
+        # skip_before_action :unchecked_power
       end
 
       def current_power(&initializer)
         self.current_power_initializer = initializer
-        around_filter :with_current_power
+        around_action :with_current_power
         helper_method :current_power
       end
 
@@ -55,7 +55,7 @@ module Consul
         # Store arguments for testing
         (@consul_power_args ||= []) << args
 
-        before_filter :check_power, guard.filter_options
+        before_action :check_power, guard.filter_options
 
         if guard.direct_access_method
           define_method guard.direct_access_method do
@@ -106,5 +106,5 @@ module Consul
     end
 
   end
-  
+
 end
